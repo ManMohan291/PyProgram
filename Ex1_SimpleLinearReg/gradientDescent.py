@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 def gradientDescent(X, y, theta, alpha, iterations):
     m=len(y)
+
+    #test
     I=np.zeros((iterations,1),dtype=float)
     J=np.zeros((iterations,1),dtype=float)
     for k in range(iterations):
@@ -14,7 +16,7 @@ def gradientDescent(X, y, theta, alpha, iterations):
         theta=theta -g.T     #Theta Itrations        
         I[k]=k*1.0
         J[k]=cc.computeCost(theta,X,y)
-
+        #New changes are here
 
     
     plt.subplot(121)
