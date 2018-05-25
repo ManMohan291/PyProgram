@@ -6,4 +6,7 @@ def computeCost(theta,X,y):
     err=h-y
     errSqr=np.multiply(err,err)
     J=(1.0/(2.0*m))* np.sum(errSqr)
+
+    #Comment Added
+
     return J
