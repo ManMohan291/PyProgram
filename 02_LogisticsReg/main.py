@@ -1,13 +1,9 @@
 import mlib as ml
 ml.clearScreen()
-data= ml.loadData("ex2data1.txt")
+data= ml.loadData("data.txt")
 
 X=data[:,0:2]
-y=data[:,2]
-
-m=len(y)
-X.shape=(m,2)
-y.shape=(m,1)
+y=data[:,2:3]
 
 X=ml.addBiasVector(X)
 
