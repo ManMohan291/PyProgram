@@ -1,34 +1,20 @@
-from os import system
-import matplotlib.pyplot as plt
-import numpy as np
-import gradientDescent as gd
-#from gradientDescent import gradientDescent
-system('cls')
-data= np.loadtxt("ex1data1.txt", delimiter=',',unpack=True,dtype=float)
-plt.figure(1)
+import mlib as ml
+ml.clearScreen()
+data= ml.loadData("ex1data1.txt")
 
-X=data.T[:,0]
-y=data.T[:,1]
+X=data[:,0]
+y=data[:,1]
 
 m=len(y)
 X.shape=(m,1)
 y.shape=(m,1)
 
+X=ml.addBiasVector(X)
 
-
-
-
-X=np.concatenate((np.ones((m,1)),X),axis=1)
-theta = np.zeros((2, 1))
-
-
+theta =ml.initializeTheta(2)
 iterations = 500
 alpha = 0.0001
 
-theta = gd.gradientDescent(X, y, theta, alpha, iterations)
-
-yn= np.matmul(X, theta)
-plt.subplot(122)
-plt.scatter(X[:,1],y)
-plt.plot(X[:,1], yn,color='r')
-plt.show()
+theta = ml.linearRegGradientDescent(X, y, theta, alpha, iterations)
+Py= ml.linearRegPredict(theta,X)
+ml.plotHypothesis(X[:,1],y,Py)
