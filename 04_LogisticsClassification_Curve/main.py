@@ -1,4 +1,6 @@
 import logisticsClassificationCurve as C
+
+
 C.clearScreen()
 dataTraining= C.loadData("dataTraining.txt")
 
