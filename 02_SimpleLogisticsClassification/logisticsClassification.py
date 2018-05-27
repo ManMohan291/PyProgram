@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 ####################################################################
 def initTheta(size):
     return np.zeros((size, 1))
-
+####################################################################
+def listToArray(xlist):
+    return np.array(xlist)
 ####################################################################
 def addBiasVector(X):
     return np.concatenate((np.ones((X.shape[0],1)),X),axis=1)
