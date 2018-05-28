@@ -28,6 +28,9 @@ def loadData(fileName):
         data.shape=(data.shape[0],1)
     return data
 
+
+
+
 ####################################################################
 def predict(theta,X):
     degree=getDegreeFromTheta(theta,X)

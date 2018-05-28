@@ -6,10 +6,13 @@ X=dataTraining[:,0:1]
 y=dataTraining[:,1:2]
 
 degree=3
+
+
+
 theta =R.initTheta(X,degree)
 
 theta = R.optimizedGradientDescent(X, y, theta,degree)
-R.plotHypothesis(theta,X,y)
+#R.plotHypothesis(theta,X,y)
 
 
 dataPrediction= R.loadData("dataPrediction.txt")
