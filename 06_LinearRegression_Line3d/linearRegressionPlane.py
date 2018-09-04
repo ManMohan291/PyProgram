@@ -58,9 +58,45 @@ def plotPlane(theta,X,y):
             uv= concatenateVectors(np.array([[u[i]]]),np.array([[v[j]]]))
             z[i,j] =np.sum( np.matmul(mapFeature(uv,degree),theta) )
     z = np.transpose(z) 
-    ax.plot_wireframe(U,V,z)
+    ax.scatter(U,V,z,marker="+")
     plt.show()
+####################################################################
+def plotLine3d(theta1,theta,X,y):
+    degree=getDegreeFromTheta(theta,X)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
+    #plt.subplot(122)    
+    aX=X[:,0]
+    aY=X[:,1]
+    aZ=y
+    ax.scatter(aX,aY,aZ,marker="o",color="r")
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    
+    u = np.linspace(x_min, x_max,50) 
+    u.shape=(len(u),1) 
+    v=predict(theta1,u) 
 
+    
+    z = np.zeros( len(u)) 
+    
+    for i in range(len(u)): 
+        uv= concatenateVectors(np.array([[u[i]]]),np.array([[v[i]]]))
+        z[i] =np.sum( np.matmul(mapFeature(uv,degree),theta) )
+    z = np.transpose(z) 
+    ax.plot(u,v,z)
+    plt.show()
+####################################################################
+def plotLine(theta,X,y):
+    plt.subplot(122)
+    plt.scatter(X,y) 
+
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    u = np.linspace(x_min, x_max, 100)
+    u.shape=(len(u),1) 
+    v=predict(theta,u) 
+    plt.plot(u, v,color='r')
+    plt.show()
 ####################################################################
 def getDegreeFromTheta(theta,X):
     sz=theta.shape[0]
