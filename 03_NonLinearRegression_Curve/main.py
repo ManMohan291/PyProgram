@@ -9,6 +9,10 @@ degree=3
 
 
 
+
+
+
+
 theta =R.initTheta(X,degree)
 
 theta = R.optimizedGradientDescent(X, y, theta,degree)
