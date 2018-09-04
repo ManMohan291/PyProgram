@@ -2,6 +2,7 @@ from os import system
 import numpy as np
 import scipy.optimize as op
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 ####################################################################
@@ -38,23 +39,26 @@ def loadData(fileName):
 ####################################################################
 def plotPlane(theta,X,y):
     degree=getDegreeFromTheta(theta,X)
-
-    plt.scatter(X[:, 0],X[:, 1],y,) 
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
     #plt.subplot(122)    
-    plt.scatter(X[np.where(y==1),0],X[np.where(y==1),1],marker="+")
-    plt.scatter(X[np.where(y!=1),0],X[np.where(y!=1),1],marker="o")
+    aX=X[:,0]
+    aY=X[:,1]
+    aZ=y
+    ax.scatter(aX,aY,aZ,marker="o",color="r")
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    u = np.linspace(x_min, x_max, 10) 
-    v = np.linspace(y_min, y_max, 10) 
-    #U,V=np.meshgrid(u,v)
+    u = np.linspace(x_min, x_max,20) 
+    v = np.linspace(y_min, y_max, 20) 
     z = np.zeros(( len(u), len(v) )) 
+    U,V=np.meshgrid(u,v)
     for i in range(len(u)): 
         for j in range(len(v)): 
             uv= concatenateVectors(np.array([[u[i]]]),np.array([[v[j]]]))
             z[i,j] =np.sum( np.matmul(mapFeature(uv,degree),theta) )
     z = np.transpose(z) 
-    plt.contour(u, v, z, levels=[0], linewidth=2)
+    ax.scatter(U,V,z,marker="+")
     plt.show()
 
 ####################################################################
