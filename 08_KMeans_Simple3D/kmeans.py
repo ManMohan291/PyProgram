@@ -105,13 +105,16 @@ def plotXY(X,y):
     plt.show()
  ####################################################################
 def plotKmean(X,idx):
-    plt.subplot(121)
-    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
-    plt.subplot(122)
-    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
-    plt.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
-    plt.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
-    plt.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+    # plt.subplot(122)
+    fig = plt.figure()
+    ax = fig.add_subplot(121, projection='3d')
+    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
+    ax = fig.add_subplot(122, projection='3d')
+    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
+    ax.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],X[:,2:3][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
+    ax.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],X[:,2:3][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
+    ax.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],X[:,2:3][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+    ax.scatter(X[:,0:1][np.where(idx==3)],X[:,1:2][np.where(idx==3)],X[:,2:3][np.where(idx==3)],marker="o",facecolors='none', edgecolors='m')
 
     plt.show()
 ####################################################################
