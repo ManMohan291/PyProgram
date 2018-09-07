@@ -104,20 +104,7 @@ def plotXY(X,y):
 
     plt.show()
  ####################################################################
-def plotKmean(X,idx):
-    # plt.subplot(122)
-    fig = plt.figure()
-    ax = fig.add_subplot(121, projection='3d')
-    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
-    ax = fig.add_subplot(122, projection='3d')
-    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
-    ax.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],X[:,2:3][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
-    ax.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],X[:,2:3][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
-    ax.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],X[:,2:3][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
-    ax.scatter(X[:,0:1][np.where(idx==3)],X[:,1:2][np.where(idx==3)],X[:,2:3][np.where(idx==3)],marker="o",facecolors='none', edgecolors='m')
 
-    plt.show()
-####################################################################
 def getDegreeFromTheta(theta,X):
     sz=theta.shape[0]
     if (X.shape[1]==2):
@@ -255,3 +242,79 @@ def KMean_Run(X,initial_centroids,max_iters):
 
    
 
+
+####################################################################
+def plotKmean(X,idx):
+    # plt.subplot(122)
+    fig = plt.figure()
+    ax = fig.add_subplot(121, projection='3d')
+    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
+    ax = fig.add_subplot(122, projection='3d')
+    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
+    ax.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],X[:,2:3][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
+    ax.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],X[:,2:3][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
+    ax.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],X[:,2:3][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+    ax.scatter(X[:,0:1][np.where(idx==3)],X[:,1:2][np.where(idx==3)],X[:,2:3][np.where(idx==3)],marker="o",facecolors='none', edgecolors='m')
+
+    plt.show()
+####################################################################
+
+
+def plotKNN(X,idx):
+
+    fig = plt.figure()
+    
+    
+    
+    ax = fig.add_subplot(111, projection='3d')
+    
+
+    
+    
+
+
+    x_min, x_max = X[:, 0].min() , X[:, 0].max() 
+    y_min, y_max = X[:, 1].min() , X[:, 1].max() 
+    z_min, z_max = X[:, 2].min() , X[:, 2].max() 
+    u = np.linspace(x_min, x_max,10) 
+    v = np.linspace(y_min, y_max,10) 
+    w = np.linspace(z_min, z_max,10) 
+    m=(len(u)*len(v)*len(w))
+    u,v,w=np.meshgrid(u,v,w)
+    u=u.reshape((m,1))
+    v=v.reshape((m,1))
+    w=w.reshape((m,1))
+    NewX=concatenateVectors(concatenateVectors(u,v),w)
+     
+    NewIdx=KNN_FindNearestClass(X,idx,NewX)  
+
+    
+
+        
+    ax.scatter(NewX[:,0:1][np.where(NewIdx==0)],NewX[:,1:2][np.where(NewIdx==0)],NewX[:,2:3][np.where(NewIdx==0)],marker="o",facecolors='r', edgecolors='r',s=100)
+    ax.scatter(NewX[:,0:1][np.where(NewIdx==1)],NewX[:,1:2][np.where(NewIdx==1)],NewX[:,2:3][np.where(NewIdx==1)],marker="o",facecolors='b', edgecolors='b',s=100)
+    ax.scatter(NewX[:,0:1][np.where(NewIdx==2)],NewX[:,1:2][np.where(NewIdx==2)],NewX[:,2:3][np.where(NewIdx==2)],marker="o",facecolors='g', edgecolors='g',s=100)
+
+
+
+    #ORGINAL
+    ax.scatter(X[:,0:1],X[:,1:2],X[:,2:3],marker=".",facecolors='black', edgecolors='none') 
+    ax.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],X[:,2:3][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
+    ax.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],X[:,2:3][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
+    ax.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],X[:,2:3][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+   
+     
+    plt.show()
+
+    ####################################################################
+def KNN_FindNearestClass(Xtrain,XClass,Xtest):
+    m=Xtrain.shape[0]
+    idx=np.zeros((Xtest.shape[0],1))
+    for i in range(len(Xtest[:,0:1])): 
+        Prev_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[0,:])
+        for j in range(1,m):
+            Current_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[j,:])
+            if(Current_Distance<=Prev_Distance):
+                idx[i]=XClass[j]
+                Prev_Distance=Current_Distance
+    return idx
