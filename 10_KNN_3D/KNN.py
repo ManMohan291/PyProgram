@@ -3,6 +3,7 @@ import numpy as np
 import scipy.optimize as op
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
 
 ####################################################################
@@ -257,8 +258,46 @@ def plotKmean(X,idx):
     ax.scatter(X[:,0:1][np.where(idx==3)],X[:,1:2][np.where(idx==3)],X[:,2:3][np.where(idx==3)],marker="o",facecolors='none', edgecolors='m')
 
     plt.show()
+
+####################################################################
+def KNN_FindNearestClass(Xtrain,XClass,Xtest):
+    m=Xtrain.shape[0]
+    idx=np.zeros((Xtest.shape[0],1))
+    for i in range(len(Xtest[:,0:1])): 
+        Prev_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[0,:])
+        for j in range(1,m):
+            Current_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[j,:])
+            if(Current_Distance<=Prev_Distance):
+                idx[i]=XClass[j]
+                Prev_Distance=Current_Distance
+    return idx
+
 ####################################################################
 
+def getcubeFaces(xpos,ypos,zpos,size):
+    size=size/2
+    points = np.array([[ -1*size +xpos, -1*size +ypos, -1*size +zpos],
+                        [ 1*size +xpos, -1*size +ypos, -1*size +zpos ],
+                        [ 1*size +xpos,  1*size +ypos, -1*size +zpos],
+                        [-1*size +xpos,  1*size +ypos, -1*size +zpos],
+                        [-1*size +xpos, -1*size +ypos,  1*size +zpos],
+                        [ 1*size +xpos, -1*size +ypos,  1*size +zpos ],
+                        [ 1*size +xpos,  1*size +ypos,  1*size +zpos],
+                        [-1*size +xpos,  1*size +ypos,  1*size +zpos]])
+    edges = [
+            [points[0], points[1], points[2], points[3]],  #back 0-right -1- up -2 - left 3 -down -0
+            [points[4], points[5], points[6], points[7]],  #front 4-right -5- up -6 - left 7 -down -4
+            [points[0], points[4], points[7], points[3]], #left
+            [points[1], points[5], points[6], points[2]], #right
+            [points[3], points[7], points[6], points[2]],  #top
+            [points[0], points[4], points[5], points[1]]   #bottom
+            ]
+
+
+
+    faces = Poly3DCollection(edges, linewidths=0, edgecolors='k')
+    return faces
+####################################################################
 
 def plotKNN(X,idx):
 
@@ -306,15 +345,58 @@ def plotKNN(X,idx):
      
     plt.show()
 
-    ####################################################################
-def KNN_FindNearestClass(Xtrain,XClass,Xtest):
-    m=Xtrain.shape[0]
-    idx=np.zeros((Xtest.shape[0],1))
-    for i in range(len(Xtest[:,0:1])): 
-        Prev_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[0,:])
-        for j in range(1,m):
-            Current_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[j,:])
-            if(Current_Distance<=Prev_Distance):
-                idx[i]=XClass[j]
-                Prev_Distance=Current_Distance
-    return idx
+
+####################################################################
+
+def plotKNN2(X,idx):
+
+    fig = plt.figure()
+    
+    
+    
+    ax = fig.add_subplot(111, projection='3d')
+    
+
+    
+    
+
+
+    x_min, x_max = X[:, 0].min() , X[:, 0].max() 
+    y_min, y_max = X[:, 1].min() , X[:, 1].max() 
+    z_min, z_max = X[:, 2].min() , X[:, 2].max() 
+    u = np.linspace(x_min, x_max,10) 
+    v = np.linspace(y_min, y_max,10) 
+    w = np.linspace(z_min, z_max,10) 
+    m=(len(u)*len(v)*len(w))
+    u,v,w=np.meshgrid(u,v,w)
+    u=u.reshape((m,1))
+    v=v.reshape((m,1))
+    w=w.reshape((m,1))
+    NewX=concatenateVectors(concatenateVectors(u,v),w)
+     
+    NewIdx=KNN_FindNearestClass(X,idx,NewX)  
+
+    
+
+    #ORGINAL
+    ax.scatter3D(X[:,0:1],X[:,1:2],X[:,2:3],marker="o",facecolors='black', edgecolors='black') 
+  
+    for i in range(m):
+        faces = getcubeFaces(NewX[i,0],NewX[i,1],NewX[i,2],1)
+        if (NewIdx[i]==0):
+            faces.set_facecolor((0.5,0,0,0.05))
+        if (NewIdx[i]==1):
+            faces.set_facecolor((0,0,0.5,0.05))
+        if (NewIdx[i]==2):
+            faces.set_facecolor((0,0.5,0,0.05))
+        ax.add_collection3d(faces)
+   # faces = getcubeFaces(xpos,ypos,zpos,size)
+   # faces.set_facecolor((0,0,1,0.5))
+   # ax.add_collection3d(faces)
+
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    plt.show()
