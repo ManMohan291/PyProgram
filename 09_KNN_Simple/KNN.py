@@ -3,6 +3,7 @@ import numpy as np
 import scipy.optimize as op
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.colors import ListedColormap
 
 ####################################################################
 def initTheta(X,degree):
@@ -254,20 +255,10 @@ def KMean_Run(X,initial_centroids,max_iters):
 ####################################################################
 def plotKNN(X,idx):
 
+    cmap_light = ListedColormap(['orange', 'cyan', 'lightgreen'])
+    cmap_bold = ListedColormap(['red', 'blue', 'green'])
 
-
-    plt.subplot(131)
-    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
-
-    plt.subplot(132)
-    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
-    plt.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
-    plt.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
-    plt.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
-
-     
-    plt.subplot(133)
-    
+   
 
 
     x_min, x_max = X[:, 0].min() , X[:, 0].max() 
@@ -275,35 +266,59 @@ def plotKNN(X,idx):
     u = np.linspace(x_min, x_max,50) 
     v = np.linspace(y_min, y_max,50) 
     m=(len(u)*len(v))
-    u,v=np.meshgrid(u,v)
-    u=u.reshape((m,1))
-    v=v.reshape((m,1))
+    U,V=np.meshgrid(u,v)
+    u=U.reshape((m,1))
+    v=V.reshape((m,1))
     NewX=concatenateVectors(u,v)
      
-    NewIdx=KNN_FindNearestClass(X,idx,NewX)  
-
-    plt.scatter(NewX[:,0:1][np.where(NewIdx==0)],NewX[:,1:2][np.where(NewIdx==0)],marker=".",facecolors='none', edgecolors='orange')
-    plt.scatter(NewX[:,0:1][np.where(NewIdx==1)],NewX[:,1:2][np.where(NewIdx==1)],marker=".",facecolors='none', edgecolors='cyan')
-    plt.scatter(NewX[:,0:1][np.where(NewIdx==2)],NewX[:,1:2][np.where(NewIdx==2)],marker=".",facecolors='none', edgecolors='lightgreen')
-
-        
+    NewIdx,DecX=KNN_FindNearestClass(X,idx,NewX)  
 
 
 
+    plt.subplot(141)
+  
+    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
 
-    #ORGINAL
+    plt.subplot(142)
+
     plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
     plt.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
     plt.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
     plt.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+    
+
+    plt.subplot(143)
+    plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
+
+    plt.scatter(NewX[:,0:1][np.where(NewIdx==0)],NewX[:,1:2][np.where(NewIdx==0)],marker=".",facecolors='none', edgecolors='orange')
+    plt.scatter(NewX[:,0:1][np.where(NewIdx==1)],NewX[:,1:2][np.where(NewIdx==1)],marker=".",facecolors='none', edgecolors='cyan')
+    plt.scatter(NewX[:,0:1][np.where(NewIdx==2)],NewX[:,1:2][np.where(NewIdx==2)],marker=".",facecolors='none', edgecolors='lightgreen')
+    plt.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
+    plt.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
+    plt.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
+        
+     
+    plt.subplot(144)
+    
+
+   
+    
+
+    
+    plt.pcolormesh(U,V,NewIdx.reshape(U.shape),cmap=cmap_light)
+    plt.scatter(X[:, 0], X[:, 1], c=idx, cmap=cmap_bold)
+    plt.scatter(NewX[:,0:1][np.where(DecX==1)],NewX[:,1:2][np.where(DecX==1)],marker=".",facecolors='None', edgecolors='k',s=5)
+    
      
     plt.show()
 
     ####################################################################
-def KNN_FindNearestClass(Xtrain,XClass,Xtest):
+def KNN_FindNearestClass_OLD(Xtrain,XClass,Xtest):
     m=Xtrain.shape[0]
     idx=np.zeros((Xtest.shape[0],1))
     for i in range(len(Xtest[:,0:1])): 
+
+        
         Prev_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[0,:])
         for j in range(1,m):
             Current_Distance=np.linalg.norm( Xtest[i,:]-Xtrain[j,:])
@@ -312,7 +327,28 @@ def KNN_FindNearestClass(Xtrain,XClass,Xtest):
                 Prev_Distance=Current_Distance
     return idx
 
-
+def KNN_FindNearestClass(Xtrain,XClass,Xtest):
+    m=Xtrain.shape[0]
+    idx=np.zeros((Xtest.shape[0],1))
+    decisionBoundry=np.zeros((Xtest.shape[0],1))
+    prevIdx=0
+    for i in range(len(Xtest[:,0:1])): 
+        Dist=np.linalg.norm(Xtest[i]-Xtrain,axis=1)
+        idx[i] =  XClass[np.where(Dist==Dist.min())][0][0]
+        if (prevIdx!=idx[i] and Xtest[:,0].min()!=Xtest[i,0] ):
+            decisionBoundry[i]=1
+        else:
+            decisionBoundry[i]=0
+        prevIdx=idx[i]
+        # DistCA=np.linalg.norm(Xtest[i]-Xtrain[np.where(XClass==0),][0],axis=1).min()
+        # DistCB=np.linalg.norm(Xtest[i]-Xtrain[np.where(XClass==1),][0],axis=1).min()
+        # DistCC=np.linalg.norm(Xtest[i]-Xtrain[np.where(XClass==2),][0],axis=1).min()
+        # if((abs(DistCA-DistCB)<0.1 and (idx[i]==0 or idx[i]==1)) or (abs(DistCA-DistCC)<0.1 and (idx[i]==0 or idx[i]==2)) or  (abs(DistCB-DistCC)<0.1 and (idx[i]==1 or idx[i]==2))):
+        #     decisionBoundry[i]=1
+        # else:
+        #     decisionBoundry[i]=0
+        
+    return idx,decisionBoundry
 
    
 
