@@ -5,15 +5,6 @@ import matplotlib.pyplot as plt
 from anytree import AnyNode, RenderTree
 
 ####################################################################
-def initTheta(size):
-    return np.zeros((size, 1))
-####################################################################
-def listToArray(xlist):
-    return np.array(xlist)
-####################################################################
-def addBiasVector(X):
-    return np.concatenate((np.ones((X.shape[0],1)),X),axis=1)
-####################################################################
 def concatenateVectors(X,Y):
     return np.concatenate((X,Y),axis=1)
 ####################################################################
@@ -32,8 +23,6 @@ def loadData(fileName):
     if (len(data.shape)==1):
         data.shape=(data.shape[0],1)
     return data
-
-
 
 ####################################################################
 def accurracy(Xy,NewXy):
@@ -63,7 +52,7 @@ def SplitTree(X, y,Level=1,Node=AnyNode(id="root",vPredictedClass=-1),ThresholdC
        
 
         s0 = AnyNode(id="Level_"+str(Level)+"_Left("+"X"+str(SplitFeature)+"<"+str(round(SplitValue,1))+")", parent=Node,vLevel=Level,vSplitFeature=SplitFeature,vOp="<",vSplitValue=SplitValue,vSplitSign=-1,vPredictedClass=-1)
-        s1 = AnyNode(id="Level_"+str(Level)+"_Right("+"X"+str(SplitFeature)+"<"+str(round(SplitValue,1))+")", parent=Node,vLevel=Level,vSplitFeature=SplitFeature,vOp=">",vSplitValue=SplitValue,vSplitSign=1,vPredictedClass=-1)
+        s1 = AnyNode(id="Level_"+str(Level)+"_Right("+"X"+str(SplitFeature)+">"+str(round(SplitValue,1))+")", parent=Node,vLevel=Level,vSplitFeature=SplitFeature,vOp=">",vSplitValue=SplitValue,vSplitSign=1,vPredictedClass=-1)
         s0=SplitTree(X0,Y0,Level+1,s0,ThresholdCount=ThresholdCount)        
         s1=SplitTree(X1,Y1,Level+1,s1,ThresholdCount=ThresholdCount)
 
@@ -97,12 +86,18 @@ def PredictTree(X,y,Node):
 
 ####################################################################
 def GetBestSplit(X,y,ThresholdCount):
-    if(X.shape[0]<=ThresholdCount or len(y[np.where(y==0)])==0 or len(y[np.where(y==1)])==0):
+    ri=0
+    ci=0  
+    for i in range(int(y.max()+1)):
+        if(len(y[np.where(y==i)])==len(y)):
+            ri=-1
+            ci=-1 
+
+    if(X.shape[0]<=ThresholdCount):
         ri=-1
-        ci=-1        
-    else:
-        ri=0
-        ci=0
+        ci=-1   
+
+    if(ri!=-1 and ci!=-1):
         G=np.zeros((X.shape))
         for ri in range(G.shape[0]):
             for ci in range(G.shape[1]):               
@@ -110,31 +105,30 @@ def GetBestSplit(X,y,ThresholdCount):
 
         ri=np.unravel_index(np.argmax(G, axis=None), G.shape)[0]
         ci=np.unravel_index(np.argmax(G, axis=None), G.shape)[1]
+    
     return ri,ci
+
 
 ####################################################################
 def GetGiniScore(X,y,ri,ci):
-    P0F=0
-    P0S=0
-    P1F=0
-    P1S=0
+    G0=0
+    G1=0
+
     Y0=y[np.where(X[:,ci]<=X[ri,ci])]
-    if (len(Y0)!=0):
-        P0F=len(Y0[np.where(Y0==0)])/len(Y0)
-        P0S=len(Y0[np.where(Y0==1)])/len(Y0)
-
-    G0=P0S*P0S+P0F*P0F
-
     Y1=y[np.where(X[:,ci]>X[ri,ci])]
-    if (len(Y1)!=0):
-        P1F=len(Y1[np.where(Y1==0)])/len(Y1)
-        P1S=len(Y1[np.where(Y1==1)])/len(Y1)
 
-    G1=P1S*P1S+P1F*P1F
+    if (len(Y0)!=0):
+        for i in range(int(y.max()+1)):
+            P=len(Y0[np.where(Y0==i)])/len(Y0)
+            G0=G0+P*P
+
+    if (len(Y1)!=0):
+        for i in range(int(y.max()+1)):
+            P=len(Y1[np.where(Y1==i)])/len(Y1)   
+            G1=G1+P*P
     
     G_Score=(len(Y0)/len(y)) * G0 + (len(Y1)/len(y)) * G1 
     return G_Score
-
 ####################################################################
 def PlotTreeSplit(X,SplitFeature,SplitValue,Level): 
     x_min, x_max = X[:, 0].min() , X[:, 0].max() 
