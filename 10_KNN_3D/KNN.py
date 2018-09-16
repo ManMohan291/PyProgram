@@ -13,6 +13,9 @@ def initTheta(X,degree):
 ####################################################################
 def listToArray(xlist):
     return np.array(xlist)
+def SaveData(data):
+    np.savetxt("dataAfterKmean.csv", data, delimiter=",",fmt='%f')
+    return
 
 ####################################################################
 def addBiasVector(X):

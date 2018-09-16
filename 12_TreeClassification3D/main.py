@@ -2,9 +2,9 @@ import TreeClassification as T
 
 T.clearScreen()
 dataTraining= T.loadData("dataTraining.txt")
-X=dataTraining[:,0:2]
-y=dataTraining[:,2:3]
-Threshold=30
+X=dataTraining[:,0:3]
+y=dataTraining[:,3:4]
+Threshold=100
 
 #Training
 TrainedTree = T.SplitTree(X, y,ThresholdCount=Threshold)
@@ -20,15 +20,14 @@ print("Traning  accuracy(",Accuracy,"%).")
 
 #Ploting 
 plt=T.getPlot()
-plt.subplot(131)  
-plt.title("Dataset")  
-T.PlotPoints(X,y)
-plt.subplot(132)  
-plt.title("Training (Threshold="+str(Threshold)+")")   
-T.PlotTree(X,y,TrainedTree)
-plt.subplot(133) 
-plt.title("Prediction "+str(Accuracy)+"%")     
-T.PlotTree(newX,newY,TrainedTree)
+fig = plt.figure()
+ax = fig.add_subplot(121, projection='3d')  
+T.PlotPoints(ax,X,y)
+ax = fig.add_subplot(122, projection='3d') 
+T.PlotTree(ax,X,y,TrainedTree)
+# plt.subplot(133) 
+# plt.title("Prediction "+str(Accuracy)+"%")     
+# T.PlotTree(newX,newY,TrainedTree)
 plt.show()
 
 #Print Tree
