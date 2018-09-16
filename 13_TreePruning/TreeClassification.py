@@ -59,15 +59,10 @@ def SplitTree(X, y,Level=1,Node=AnyNode(id="root",vPredictedClass=-1),ThresholdC
         s1=SplitTree(X1,Y1,Level+1,s1,ThresholdCount=ThresholdCount)
 
     else:
-        PredictedClass=0
-        PredictedClassLen=0
-        for i in range(int(y.max()+1)):
-            if (len(y[np.where(y==i)])>PredictedClassLen):
-                PredictedClass=i
-                PredictedClassLen=len(y[np.where(y==i)])
-        
-        Node.vPredictedClass=PredictedClass
-        
+        if len(y[np.where(y==0)])<= len(y[np.where(y==1)]):
+            Node.vPredictedClass=1
+        else:
+            Node.vPredictedClass=0
       
 
     return Node
@@ -90,6 +85,29 @@ def PredictTree(X,y,Node):
             y[i]=Node.vPredictedClass
         newY=y
     return newX,newY
+####################################################################
+def PruneTree(X,y,Node,ThresholdCount):
+    if(len(Node.children)!=0):
+        SplitFeature=Node.children[0].vSplitFeature
+        SplitValue=Node.children[0].vSplitValue
+        X0=X[np.where(X[:,SplitFeature]<=SplitValue)]
+        Y0=y[np.where(X[:,SplitFeature]<=SplitValue)]             
+        X1=X[np.where(X[:,SplitFeature]>SplitValue)]
+        Y1=y[np.where(X[:,SplitFeature]>SplitValue)]
+        if (X0.shape[0]<ThresholdCount or X1.shape[0]<ThresholdCount):
+            Node.children=[]
+            PredictedClass=0
+            PredictedClassLen=0
+            for i in range(int(y.max()+1)):
+                if (len(y[np.where(y==i)])>PredictedClassLen):
+                    PredictedClass=i
+                    PredictedClassLen=len(y[np.where(y==i)])
+            Node.vPredictedClass=PredictedClass
+        else:            
+            PruneTree(X0,Y0,Node.children[0],ThresholdCount)
+            PruneTree(X1,Y1,Node.children[1],ThresholdCount)
+                
+    return Node
 
 ####################################################################
 def GetBestSplit(X,y,ThresholdCount):
