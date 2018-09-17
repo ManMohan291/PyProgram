@@ -26,9 +26,6 @@ ax = fig.add_subplot(121, projection='3d')
 T.PlotPoints(ax,X,y)
 ax = fig.add_subplot(122, projection='3d') 
 T.PlotTree(ax,X,y,TrainedTree)
-# plt.subplot(133) 
-# plt.title("Prediction "+str(Accuracy)+"%")     
-# T.PlotTree(newX,newY,TrainedTree)
 plt.show()
 
 #Print Tree
