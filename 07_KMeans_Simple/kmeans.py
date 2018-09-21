@@ -13,6 +13,12 @@ def initTheta(X,degree):
 def listToArray(xlist):
     return np.array(xlist)
 
+
+####################################################################
+
+def SaveData(data):
+    np.savetxt("dataAfterKmean.txt", data, delimiter=",",fmt='%f')
+    return
 ####################################################################
 def addBiasVector(X):
     r=np.column_stack((np.ones((X.shape[0],1)),X))
@@ -103,7 +109,7 @@ def plotXY(X,y):
     plt.scatter(X,y,marker="+") 
 
     plt.show()
- ####################################################################
+ ##############################################################sa######
 def plotKmean(X,idx):
     plt.subplot(121)
     plt.scatter(X[:,0:1],X[:,1:2],marker=".",facecolors='black', edgecolors='none') 
