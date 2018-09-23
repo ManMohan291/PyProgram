@@ -11,3 +11,4 @@ C.plotQDA(X,y)
 #C.plotNormalSurface(X,y)
 
 
+

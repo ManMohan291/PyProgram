@@ -62,12 +62,12 @@ def plotLDA(X,y):
 
 
     plt.subplot(121)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:,0], cmap=cmap_bold)
    
 
     plt.subplot(122)
     plt.pcolormesh(U,V,Newy.reshape(U.shape),cmap=cmap_light)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:,0], cmap=cmap_bold)
     plt.show()
     return
     
@@ -98,14 +98,14 @@ def plotNormalSurface(X,y):
     rv = multivariate_normal([M0[0], M0[1]], [[V0[0], 0], [0, V0[1]]])
     W=rv.pdf(pos)
 
-    ax.plot_surface(U,V,W,alpha=0.5, cmap='viridis',linewidth=0)
+    ax.plot_surface(U,V,W,alpha=1, cmap='viridis',linewidth=0,zorder=1)
 
 
 
     rv = multivariate_normal([M1[0], M1[1]], [[V1[0], 0], [0, V1[1]]])
     W=rv.pdf(pos)
 
-    ax.plot_surface(U,V,W,alpha=0.5,cmap='viridis',linewidth=0)
+    ax.plot_surface(U,V,W,alpha=0.5,cmap='viridis',linewidth=0,zorder=1)
 
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

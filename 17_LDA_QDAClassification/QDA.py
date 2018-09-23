@@ -64,14 +64,14 @@ def plotQDA(X,y):
     Newy=LDAClassifier(X,y,NewX)  
 
     plt.pcolormesh(U,V,Newy.reshape(U.shape),cmap=cmap_light)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:, 0], cmap=cmap_bold)
    
 
     plt.subplot(122)
     plt.title("QDA")
     Newy=QDAClassifier(X,y,NewX)  
     plt.pcolormesh(U,V,Newy.reshape(U.shape),cmap=cmap_light)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:, 0], cmap=cmap_bold)
     plt.show()
     return
     

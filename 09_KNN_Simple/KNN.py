@@ -306,7 +306,10 @@ def plotKNN(X,idx):
 
     
     plt.pcolormesh(U,V,NewIdx.reshape(U.shape),cmap=cmap_light)
-    plt.scatter(X[:, 0], X[:, 1], c=idx, cmap=cmap_bold)
+    #plt.scatter(X[:, 0], X[:, 1], c=idx, cmap=cmap_bold)
+    plt.scatter(X[:,0:1][np.where(idx==0)],X[:,1:2][np.where(idx==0)],marker="o",facecolors='none', edgecolors='r')
+    plt.scatter(X[:,0:1][np.where(idx==1)],X[:,1:2][np.where(idx==1)],marker="o",facecolors='none', edgecolors='b')
+    plt.scatter(X[:,0:1][np.where(idx==2)],X[:,1:2][np.where(idx==2)],marker="o",facecolors='none', edgecolors='g')
     plt.scatter(NewX[:,0:1][np.where(DecX==1)],NewX[:,1:2][np.where(DecX==1)],marker=".",facecolors='None', edgecolors='k',s=5)
     
      

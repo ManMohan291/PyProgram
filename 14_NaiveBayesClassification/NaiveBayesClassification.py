@@ -62,12 +62,12 @@ def plotNaiveBayes(X,y):
 
 
     plt.subplot(121)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:,0], cmap=cmap_bold)
    
 
     plt.subplot(122)
     plt.pcolormesh(U,V,Newy.reshape(U.shape),cmap=cmap_light)
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
+    plt.scatter(X[:, 0], X[:, 1], c=y[:,0], cmap=cmap_bold)
     plt.show()
     return
     
