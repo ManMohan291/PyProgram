@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui,QtWidgets
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets  import QWebEngineView
  
-class MyBrowser(QtWidgets.QWidget):
+class MyBrowser(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         QWebEngineView.__init__(self)
@@ -22,4 +22,4 @@ if __name__ == "__main__":
     myapp = MyBrowser()
     myapp.ui.qwebview.load(QUrl('http://www.pythonspot.com'))
     myapp.show()
-    sys.exit(app.exec_())
+    app.exec_()
