@@ -250,9 +250,11 @@ def NuralMinimize(X, y,nn_params, input_layer_size, hidden_layer_size, num_label
 ####################################################################
 def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambda_reg):
     
-    Theta1 = np.reshape(nn_params[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, input_layer_size + 1), order='F')
+    Theta1=nn_params[:hidden_layer_size * (input_layer_size + 1)]
+    Theta1 =Theta1.reshape((hidden_layer_size, input_layer_size + 1))
 
-    Theta2 = np.reshape(nn_params[hidden_layer_size * (input_layer_size + 1):], (num_labels, hidden_layer_size + 1), order='F')
+    Theta2=nn_params[hidden_layer_size * (input_layer_size + 1):]
+    Theta2 = Theta2.reshape((num_labels, hidden_layer_size + 1))
 
   
     m = len(X)             
@@ -260,15 +262,6 @@ def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X
     Theta1_grad = np.zeros( Theta1.shape )
     Theta2_grad = np.zeros( Theta2.shape )
     
-    X = addBiasVector(X)
-
-    a2 = sigmoid( np.matmul(X,Theta1.T) )
-
-    
-    a2 = addBiasVector(a2)
-
-   
-    a3 = sigmoid( np.matmul(a2,Theta2.T) )
 
     labels = y
     # set y to be matrix of size m x k
@@ -278,58 +271,70 @@ def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X
     	y[i, int(labels[i])-1] = 1
 
     
+    #forward Propagation
 
-    cost = 0
-    for i in range(m):
-    	cost += np.sum( y[i] * np.log( a3[i] ) + (1 - y[i]) * np.log( 1 - a3[i] ) )
+    #GET Layer 1
+    a1=X
 
-    J = -(1.0/m)*cost
+    #GET Layer 2
+    a1=addBiasVector(a1)
+    z2=np.matmul(a1,np.transpose(Theta1))
+    a2=sigmoid(z2)
 
-    #REGULARIZATION
-   
+    #GET LAYER 3
+    a2=addBiasVector(a2)
+    z3=np.matmul(a2,np.transpose(Theta2))
+    a3=sigmoid(z3)
 
-    sumOfTheta1 = np.sum(np.sum(Theta1[:,1:]**2))
-    sumOfTheta2 = np.sum(np.sum(Theta2[:,1:]**2))
+    
+    #Layer3 is final Layer   
+    h=a3
+    
+    
+    cost= np.subtract(-  1* np.multiply(y,np.log(h)) , np.multiply(np.subtract(np.ones(y.shape),y) , np.log(np.subtract(np.ones(h.shape),h))))
+    J=1/m*np.sum(np.sum(cost))
+    
 
-    J = J + ( (lambda_reg/(2.0*m))*(sumOfTheta1+sumOfTheta2) )
+
+
+
+    
 
     #BACKPROPAGATION
 
-    bigDelta1 = 0
-    bigDelta2 = 0
 
-    # for each training example
-    for t in range(m):
-        x = X[t]
-        a2 = sigmoid( np.matmul(x,Theta1.T) )
-        a2 = np.concatenate((np.array([1]), a2))
-        a3 = sigmoid( np.matmul(a2,Theta2.T) )
-        delta3 = np.zeros((num_labels))
-        for k in range(num_labels):
-            y_k = y[t, k]
-            delta3[k] = a3[k] - y_k
+    #Layer 3
+    err=np.subtract(h,y)
+    Theta2_grad=(1/m)* np.matmul(err.T, a2)
+  
 
-        delta2 = (np.matmul(Theta2[:,1:].T, delta3).T) * sigmoidGradient( np.matmul(x, Theta1.T) )
+    #Layer 2
+    err=np.multiply(  np.matmul(err,Theta2), sigmoidGradient(addBiasVector(z2)))
+    err =  err[:,1:]
+    Theta1_grad=(1/m)*np.matmul(err.T, a1)
+    
+    #Layer 1
+    #Input Layer have no error
+ 
 
-        
-        bigDelta1 += np.outer(delta2, x)    # For outer product use outer instead of np.matmul(delta2[:,None], x[None,:])
-        bigDelta2 += np.outer(delta3, a2)
-
-
-    # step 5: obtain gradient for neural net cost function by dividing the accumulated gradients by m
-    Theta1_grad = bigDelta1 / m
-    Theta2_grad = bigDelta2 / m
-
+    
     #% REGULARIZATION 
-    Theta1_grad_unregularized = np.copy(Theta1_grad)
-    Theta2_grad_unregularized = np.copy(Theta2_grad)
-    Theta1_grad += (float(lambda_reg)/m)*Theta1
-    Theta2_grad += (float(lambda_reg)/m)*Theta2
-    Theta1_grad[:,0] = Theta1_grad_unregularized[:,0]
-    Theta2_grad[:,0] = Theta2_grad_unregularized[:,0]
 
+    regularized_Theta2=concatenateVectors(np.zeros((Theta2_grad.shape[0],1)), Theta2_grad[:,1:])
+    regularized_Theta1=concatenateVectors(np.zeros((Theta1_grad.shape[0],1)), Theta1_grad[:,1:])
    
+   
+
+ 
+    Theta1_grad += (float(lambda_reg)/m)*regularized_Theta1
+    Theta2_grad += (float(lambda_reg)/m)*regularized_Theta2
+   
+
+
+    J = J + ( lambda_reg*(1/(2.0*m))*(np.sum(np.sum(regularized_Theta1**2))+np.sum(np.sum(regularized_Theta2**2))) )
+
     # Unroll gradients
-    grad = np.concatenate((Theta1_grad.reshape(Theta1_grad.size, order='F'), Theta2_grad.reshape(Theta2_grad.size, order='F')))
+    grad = concatenateVectors(Theta1_grad.reshape(1,Theta1_grad.size), Theta2_grad.reshape(1,Theta2_grad.size))
+    grad=grad.flatten()
 
     return J, grad
