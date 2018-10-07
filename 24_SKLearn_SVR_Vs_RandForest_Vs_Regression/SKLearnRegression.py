@@ -62,7 +62,7 @@ def SKLearnRegression(Xtrain, ytrain,degree,regAlpha,algorithm):
     elif (algorithm=="Ridge"):
         RegObj=LR.Ridge(alpha=regAlpha,normalize=True).fit(Xp,ytrain)
     elif (algorithm=="SVR"):
-        RegObj=SM.SVR().fit(Xp,ytrain)
+        RegObj=SM.SVR(degree=degree).fit(Xp,ytrain)
     elif (algorithm=="RandomForest"):
         RegObj=RF.RandomForestRegressor().fit(Xp,ytrain)
     else:

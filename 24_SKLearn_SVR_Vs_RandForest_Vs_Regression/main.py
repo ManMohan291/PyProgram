@@ -40,7 +40,7 @@ plt.legend(("Degree="+str(degree)," Alpha="+str(regAlpha)))
 
 regAlpha=None
 degree=1
-RegObj=R.SKLearnRegression(X,y,degree,regAlpha,"SVR")
+RegObj=R.SKLearnRegression(X,y.flatten(),degree,regAlpha,"SVR")
 plt.subplot(234)
 R.SKLearnPlotHypothesis(RegObj,X,y,degree,regAlpha)
 predicted_y=R.SKLearnPredict(RegObj,X,degree)      
@@ -52,7 +52,7 @@ plt.legend(("Degree="+str(degree)," Alpha="+str(regAlpha)))
 
 regAlpha=None
 degree=8
-RegObj=R.SKLearnRegression(X,y,degree,regAlpha,"RandomForest")
+RegObj=R.SKLearnRegression(X,y.flatten(),degree,regAlpha,"RandomForest")
 plt.subplot(235)
 R.SKLearnPlotHypothesis(RegObj,X,y,degree,regAlpha)
 predicted_y=R.SKLearnPredict(RegObj,X,degree)      
