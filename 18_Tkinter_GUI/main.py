@@ -26,6 +26,7 @@ def btnCancel_click():
 #################################
 frmMain=tk.Tk()
 frmMain.title("Application Title")
+frmMain.geometry("500x500")
 
 #Variables to Input Box
 #################################
